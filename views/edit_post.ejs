@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier le post</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-inner">
+            <a href="/" class="logo">Forum</a>
+            <div class="nav-links">
+                <span class="nav-user"><%= username %></span>
+                <a href="/logout" class="btn-deconnexion">Se déconnecter</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenu">
+        <div class="form-card">
+            <h1 style="font-size:22px; font-weight:600; margin-bottom:24px;">Modifier le post</h1>
+
+            <% if (error) { %>
+                <div class="msg-erreur"><%= error %></div>
+            <% } %>
+
+            <form method="POST" action="/post/edit">
+                <input type="hidden" name="post_id" value="<%= post.id %>">
+
+                <div class="form-groupe">
+                    <label for="title">Titre</label>
+                    <input type="text" id="title" name="title" value="<%= post.title %>" required>
+                </div>
+
+                <div class="form-groupe">
+                    <label for="content">Contenu</label>
+                    <textarea id="content" name="content" rows="8" required><%= post.content %></textarea>
+                </div>
+
+                <div class="form-groupe">
+                    <fieldset>
+                        <legend>Catégories (au moins une)</legend>
+                        <% categories.forEach(cat => { %>
+                            <label>
+                                <input type="checkbox" name="categories" value="<%= cat.id %>"
+                                    <%= selected[cat.id] ? 'checked' : '' %>>
+                                <%= cat.name %>
+                            </label>
+                        <% }) %>
+                    </fieldset>
+                </div>
+
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <button type="submit" class="btn-bleu">Enregistrer</button>
+                    <a href="/post/<%= post.id %>" class="btn-gris">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

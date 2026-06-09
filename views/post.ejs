@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title><%= post.title %></title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-inner">
+            <a href="/" class="logo">Forum</a>
+            <div class="nav-links">
+                <% if (username) { %>
+                    <span class="nav-user"><%= username %></span>
+                    <a href="/logout" class="btn-deconnexion">Se déconnecter</a>
+                <% } else { %>
+                    <a href="/login">Se connecter</a>
+                    <a href="/register">S'inscrire</a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenu">
+        <h1 class="post-titre"><%= post.title %></h1>
+
+        <p class="post-meta">
+            par <strong><%= post.username %></strong> · <%= post.created_at %>
+            <% if (post.categories && post.categories.length > 0) { %>
+                &nbsp;
+                <% post.categories.forEach(cat => { %>
+                    <span class="categorie-tag"><%= cat %></span>
+                <% }) %>
+            <% } %>
+        </p>
+
+        <% if (post.image_path) { %>
+            <img class="post-image" src="/<%= post.image_path %>" alt="image du post">
+        <% } %>
+
+        <div class="post-contenu"><%= post.content %></div>
+
+        <div class="actions-post">
+            <form method="POST" action="/like" style="display:contents">
+                <input type="hidden" name="post_id" value="<%= post.id %>">
+                <input type="hidden" name="redirect" value="/post/<%= post.id %>">
+                <button class="btn-like btn-upvote" name="value" value="1">👍 (<%= post.likes %>)</button>
+                <button class="btn-like btn-downvote" name="value" value="-1">👎 (<%= post.dislikes %>)</button>
+            </form>
+            <% if (userId && userId == post.user_id) { %>
+                <a href="/post/edit?id=<%= post.id %>" class="btn-gris">Modifier</a>
+                <form method="POST" action="/post/delete" style="display:contents" onsubmit="return confirm('Supprimer ce post ?')">
+                    <input type="hidden" name="post_id" value="<%= post.id %>">
+                    <button type="submit" class="btn-rouge">Supprimer</button>
+                </form>
+            <% } %>
+        </div>
+
+        <div class="section-commentaires">
+            <h2>Commentaires (<%= comments.length %>)</h2>
+
+            <% if (comments && comments.length > 0) { %>
+                <% comments.forEach(comment => { %>
+                    <div class="commentaire">
+                        <div class="commentaire-auteur">
+                            <strong><%= comment.username %></strong> · <%= comment.created_at %>
+                        </div>
+                        <div class="commentaire-texte"><%= comment.content %></div>
+                        <div class="commentaire-actions">
+                            <form method="POST" action="/like" style="display:contents">
+                                <input type="hidden" name="comment_id" value="<%= comment.id %>">
+                                <input type="hidden" name="redirect" value="/post/<%= post.id %>">
+                                <button class="btn-like btn-upvote" name="value" value="1">👍 (<%= comment.likes %>)</button>
+                                <button class="btn-like btn-downvote" name="value" value="-1">👎 (<%= comment.dislikes %>)</button>
+                            </form>
+                            <% if (userId && userId == comment.user_id) { %>
+                                <form method="POST" action="/comment/delete" style="display:contents" onsubmit="return confirm('Supprimer ce commentaire ?')">
+                                    <input type="hidden" name="comment_id" value="<%= comment.id %>">
+                                    <input type="hidden" name="post_id" value="<%= post.id %>">
+                                    <button type="submit" class="btn-rouge">Supprimer</button>
+                                </form>
+                            <% } %>
+                        </div>
+                        <% if (userId && userId == comment.user_id) { %>
+                            <form method="POST" action="/comment/edit" style="margin-top:12px">
+                                <input type="hidden" name="comment_id" value="<%= comment.id %>">
+                                <input type="hidden" name="post_id" value="<%= post.id %>">
+                                <div class="form-groupe">
+                                    <textarea name="content" rows="2"><%= comment.content %></textarea>
+                                </div>
+                                <button type="submit" class="btn-gris">Modifier le commentaire</button>
+                            </form>
+                        <% } %>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p class="texte-vide">Aucun commentaire pour l'instant.</p>
+            <% } %>
+
+            <% if (username) { %>
+                <div class="form-commentaire">
+                    <h3>Ajouter un commentaire</h3>
+                    <form method="POST" action="/comment/create">
+                        <input type="hidden" name="post_id" value="<%= post.id %>">
+                        <div class="form-groupe">
+                            <textarea name="content" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-bleu">Commenter</button>
+                    </form>
+                </div>
+            <% } else { %>
+                <p style="margin-top:24px; font-size:14px; color:#6b7280">
+                    <a href="/login">Connectez-vous</a> pour laisser un commentaire.
+                </p>
+            <% } %>
+        </div>
+    </main>
+</body>
+</html>

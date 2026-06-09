@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Forum</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="nav-inner">
+            <a href="/" class="logo">Forum</a>
+            <div class="nav-links">
+                <% if (username) { %>
+                    <span class="nav-user"><%= username %></span>
+                    <a href="/post/create">Nouveau post</a>
+                    <a href="/logout" class="btn-deconnexion">Se déconnecter</a>
+                <% } else { %>
+                    <a href="/login">Se connecter</a>
+                    <a href="/register">S'inscrire</a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenu">
+        <div class="filtres">
+            <a href="/" class="btn-filtre">Tous les posts</a>
+            <% if (username) { %>
+                <a href="/?filter=mine" class="btn-filtre">Mes posts</a>
+                <a href="/?filter=liked" class="btn-filtre">Mes likes</a>
+            <% } %>
+            <% categories.forEach(cat => { %>
+                <a href="/?filter=category&category_id=<%= cat.id %>" class="btn-filtre"><%= cat.name %></a>
+            <% }) %>
+        </div>
+
+        <% if (posts && posts.length > 0) { %>
+            <ul class="liste-posts">
+                <% posts.forEach(post => { %>
+                    <li>
+                        <div class="post-card">
+                            <div class="post-card-titre">
+                                <a href="/post/<%= post.id %>"><%= post.title %></a>
+                            </div>
+                            <div class="post-card-meta">
+                                par <strong><%= post.username %></strong> · <%= post.created_at %>
+                            </div>
+                        </div>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p class="texte-vide">Aucun post pour l'instant.</p>
+        <% } %>
+    </main>
+</body>
+</html>
